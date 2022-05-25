@@ -43,7 +43,6 @@ class WalletService {
     async updateAllWallet(req: Request, res: Response) {
         const client = await pool.connect();
         const resultQuery: any = await WalletQuery.updateWalletData(client,req);
-        console.log(resultQuery)
         client.release();
 
         if (resultQuery.rowCount > 0) {
@@ -55,6 +54,25 @@ class WalletService {
             res.status(500).json({
                 status: 'NOK',
                 message: 'Data update fail'
+            });
+        }
+    }
+    async getWalletbyID(req: Request, res: Response) {
+        const client = await pool.connect();
+        const resultQuery: any = await WalletQuery.getWalletById(client,req);
+        client.release();
+
+        if (resultQuery.rowCount > 0) {
+            const result: any = resultQuery.rows;
+            res.status(200).json({
+                status: 'OK',
+                message: 'Wallet is retrieved successfully',
+                data: result
+            });
+        } else {
+            res.status(200).json({
+                status: 'NOK',
+                message: 'Wallet is empty'
             });
         }
     }

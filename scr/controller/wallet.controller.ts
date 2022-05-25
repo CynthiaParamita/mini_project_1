@@ -69,6 +69,19 @@ class WalletController {
             });
         }
     }
+
+    public async getWalletbyID(req: Request, res: Response) {
+        try {
+            const walletService: WalletService = new WalletService();
+            await walletService.getWalletbyID(req, res);
+        }catch (error) {
+            console.log('[WalletController][getWallet]', error);
+            res.status(500).json({
+                status: 'NOK',
+                message: 'Server error',
+            });
+        }
+    }
 }
 
 export default WalletController;

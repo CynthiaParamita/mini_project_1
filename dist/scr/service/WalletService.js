@@ -59,7 +59,6 @@ class WalletService {
         return __awaiter(this, void 0, void 0, function* () {
             const client = yield dbconnector_1.default.connect();
             const resultQuery = yield WalletQuery_1.default.updateWalletData(client, req);
-            console.log(resultQuery);
             client.release();
             if (resultQuery.rowCount > 0) {
                 res.status(200).json({
@@ -71,6 +70,27 @@ class WalletService {
                 res.status(500).json({
                     status: 'NOK',
                     message: 'Data update fail'
+                });
+            }
+        });
+    }
+    getWalletbyID(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const client = yield dbconnector_1.default.connect();
+            const resultQuery = yield WalletQuery_1.default.getWalletById(client, req);
+            client.release();
+            if (resultQuery.rowCount > 0) {
+                const result = resultQuery.rows;
+                res.status(200).json({
+                    status: 'OK',
+                    message: 'Wallet is retrieved successfully',
+                    data: result
+                });
+            }
+            else {
+                res.status(200).json({
+                    status: 'NOK',
+                    message: 'Wallet is empty'
                 });
             }
         });

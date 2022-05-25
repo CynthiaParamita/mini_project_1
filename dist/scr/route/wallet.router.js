@@ -47,5 +47,6 @@ const middleware = (req, res, next) => {
 router.get('/get/all', middleware, walletController.getWallet);
 router.post('/insert', middleware, walletController.insertWallet);
 router.post('/update', middleware, walletController.updateWallet);
+router.get('/get/detail/:id', middleware, walletController.getWalletbyID);
 exports.default = router;
 //# sourceMappingURL=wallet.router.js.map

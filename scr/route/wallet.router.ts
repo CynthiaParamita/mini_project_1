@@ -21,5 +21,6 @@ const middleware: any = (req: Request, res: Response, next: NextFunction) => {
 router.get('/get/all', middleware, walletController.getWallet);
 router.post('/insert', middleware, walletController.insertWallet);
 router.post('/update', middleware, walletController.updateWallet);
+router.get('/get/detail/:id', middleware, walletController.getWalletbyID);
 
 export default router;

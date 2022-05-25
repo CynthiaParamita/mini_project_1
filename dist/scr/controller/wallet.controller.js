@@ -46,7 +46,6 @@ class WalletController {
                     res.status(400).json({
                         status: 'NOK',
                         message: 'Invalid request body',
-                        data: req.body
                     });
                 }
             }
@@ -84,6 +83,22 @@ class WalletController {
                 res.status(500).json({
                     status: 'NOK',
                     message: 'Server error'
+                });
+            }
+        });
+    }
+    getWalletbyID(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const walletService = new WalletService_1.default();
+                yield walletService.getWalletbyID(req, res);
+            }
+            catch (error) {
+                console.log('[WalletController][getWallet]', error);
+                res.status(500).json({
+                    status: 'NOK',
+                    message: 'Server error',
+                    data: req.params.id
                 });
             }
         });

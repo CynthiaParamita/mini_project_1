@@ -32,6 +32,14 @@ class WalletQuery {
             return result;
         });
     }
+    static getWalletById(client, request) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = parseInt(request.params.id);
+            const sql = 'SELECT * FROM t_wallet WHERE id = $1';
+            const result = yield client.query(sql, [id]);
+            return result;
+        });
+    }
 }
 exports.default = WalletQuery;
 //# sourceMappingURL=WalletQuery.js.map
