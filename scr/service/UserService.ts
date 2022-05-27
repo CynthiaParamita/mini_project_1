@@ -48,11 +48,9 @@ class WalletService {
         //connect to db and querying
         const client = await pool.connect()
         const resultQuery: any = await UserQuery.loginUser(client,req)
-        console.log(resultQuery)
         client.release()
 
         if (resultQuery.rowCount > 0) {
-            console.log(resultQuery.rows[0].password)
             const decryptedText  = CryptoJS.AES.decrypt(resultQuery.rows[0].password, 'secret key 123').toString(CryptoJS.enc.Utf8);
             if (decryptedText == pass_atob){ 
                 const token = jwt.sign({resultQuery},'random_string',{expiresIn: "2h",})
