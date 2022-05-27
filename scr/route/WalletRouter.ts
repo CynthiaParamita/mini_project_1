@@ -1,7 +1,7 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
 import { constants } from 'zlib';
 export const routerTemplate = express.Router()
-import WalletController from '../controller/wallet.controller';
+import WalletController from '../controller/WalletController';
 
 const router = Router();
 const walletController = new WalletController();

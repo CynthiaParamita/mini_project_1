@@ -20,7 +20,8 @@ class WalletQuery {
     static insertWalletData(client, request) {
         return __awaiter(this, void 0, void 0, function* () {
             const { income, expenses } = request.body;
-            const result = yield client.query('INSERT INTO t_wallet (income, expenses) VALUES ($1, $2)', [income, expenses]);
+            const sql = 'INSERT INTO t_wallet (income, expenses) VALUES ($1, $2)';
+            const result = yield client.query(sql, [income, expenses]);
             return result;
         });
     }

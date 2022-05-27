@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const wallet_router_1 = __importDefault(require("./route/wallet.router"));
+const WalletRouter_1 = __importDefault(require("./route/WalletRouter"));
+const UserRouter_1 = __importDefault(require("./route/UserRouter"));
 const dbconnector_1 = __importDefault(require("./dbconfig/dbconnector"));
 class Server {
     constructor() {
@@ -37,7 +38,8 @@ class Server {
         this.app.get("/", (req, res) => {
             res.send("Hello World");
         });
-        this.app.use('/wallet', wallet_router_1.default);
+        this.app.use('/wallet', WalletRouter_1.default);
+        this.app.use('/user', UserRouter_1.default);
     }
 }
 exports.default = Server;

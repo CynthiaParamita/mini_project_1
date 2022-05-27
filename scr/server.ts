@@ -1,6 +1,7 @@
 import express, { Application, Router } from 'express';
 import bodyParser from 'body-parser';
-import walletRouter from './route/wallet.router';
+import walletRouter from './route/WalletRouter';
+import userRouter from './route/UserRouter';
 import pool from './dbconfig/dbconnector';
 
 class Server {
@@ -30,6 +31,7 @@ class Server {
             res.send("Hello World");
         });
         this.app.use('/wallet', walletRouter);
+        this.app.use('/user',userRouter)
     }
 
     public start = (port: number) => {

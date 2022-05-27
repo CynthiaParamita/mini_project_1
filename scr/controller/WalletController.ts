@@ -36,10 +36,10 @@ class WalletController {
                 });
             }
         } catch (error) {
-            console.log('[WalletController][getWallet]', error);
+            console.log('[WalletController][insertWallet]', error);
             res.status(500).json({
                 status: 'NOK',
-                message: 'Server error control'
+                message: 'Server error'
             });
         }
     }
@@ -62,7 +62,7 @@ class WalletController {
                 });
             }
         } catch (error) {
-            console.log('[WalletController][getWallet]', error);
+            console.log('[WalletController][updateWallet]', error);
             res.status(500).json({
                 status: 'NOK',
                 message: 'Server error'
@@ -75,13 +75,15 @@ class WalletController {
             const walletService: WalletService = new WalletService();
             await walletService.getWalletbyID(req, res);
         }catch (error) {
-            console.log('[WalletController][getWallet]', error);
+            console.log('[WalletController][getWalletbyID]', error);
             res.status(500).json({
                 status: 'NOK',
                 message: 'Server error',
             });
         }
     }
+
+   
 }
 
 export default WalletController;

@@ -6,7 +6,8 @@ class WalletQuery {
     }
     static async insertWalletData (client: any,request:any) {
         const { income, expenses }: any = request.body
-        const result: any = await client.query('INSERT INTO t_wallet (income, expenses) VALUES ($1, $2)', [income, expenses]);
+        const sql: string='INSERT INTO t_wallet (income, expenses) VALUES ($1, $2)'
+        const result: any = await client.query(sql, [income, expenses]);
         return result;    
     }
     static async updateWalletData (client: any, request: any) {
