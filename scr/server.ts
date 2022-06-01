@@ -3,6 +3,8 @@ import bodyParser from 'body-parser';
 import walletRouter from './route/WalletRouter';
 import userRouter from './route/UserRouter';
 import pool from './dbconfig/dbconnector';
+import 'dotenv/config'
+import redis=require('redis')
 
 class Server {
     private app;
@@ -11,7 +13,7 @@ class Server {
         this.app = express();
         this.config();
         this.routerConfig();
-        this.dbConnect();
+        this.dbConnect();   
     }
 
     private config() {
@@ -25,7 +27,7 @@ class Server {
             console.log('Connected');
           }); 
     }
-
+    
     private routerConfig() {
         this.app.get("/", (req, res) => {
             res.send("Hello World");

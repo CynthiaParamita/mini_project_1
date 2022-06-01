@@ -1,6 +1,5 @@
 import pool from '../dbconfig/dbconnector';
 import express, {Request, Response} from 'express';
-
 import WalletQuery from '../query/WalletQuery';
 
 class WalletService {

@@ -8,6 +8,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const WalletRouter_1 = __importDefault(require("./route/WalletRouter"));
 const UserRouter_1 = __importDefault(require("./route/UserRouter"));
 const dbconnector_1 = __importDefault(require("./dbconfig/dbconnector"));
+require("dotenv/config");
 class Server {
     constructor() {
         this.start = (port) => {

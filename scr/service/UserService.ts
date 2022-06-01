@@ -6,8 +6,10 @@ import atob from 'atob'
 import btoa from 'btoa'
 import CryptoJS from 'crypto-js'
 import { Cipher } from 'crypto';
+import 'dotenv/config'
+import redisClient from "../redis/connectRedis"
 
-class WalletService {
+class UserService {
     async registUser(req: Request, res: Response) {
         // encrypt password using btoa
         const password: string = req.body.password
@@ -17,7 +19,7 @@ class WalletService {
         const pass_atob:string = atob(pass_btoa)
        
         // encrypt pass_atob using crypt-js
-        const cipherpass = CryptoJS.AES.encrypt(pass_atob, 'secret key 123').toString()
+        const cipherpass = CryptoJS.AES.encrypt(pass_atob, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString()
 
         //connect to db and querying
         const client = await pool.connect()
@@ -51,9 +53,12 @@ class WalletService {
         client.release()
 
         if (resultQuery.rowCount > 0) {
-            const decryptedText  = CryptoJS.AES.decrypt(resultQuery.rows[0].password, 'secret key 123').toString(CryptoJS.enc.Utf8);
+            const decryptedText  = CryptoJS.AES.decrypt(resultQuery.rows[0].password, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString(CryptoJS.enc.Utf8);
             if (decryptedText == pass_atob){ 
-                const token = jwt.sign({resultQuery},'random_string',{expiresIn: "2h",})
+                const token : string = jwt.sign({resultQuery},process.env.ACCESS_TOKEN_KEY_JWT,{expiresIn: "2h",})
+                const userID: string=resultQuery.rows[0].id.toString()
+                redisClient.SET(token,"1")
+                redisClient.expire(token,7200)
                 res.status(200).json({
                     status: 'OK',
                     message: 'User login successful',
@@ -69,7 +74,9 @@ class WalletService {
             });
         }
     }
+
+
     
 }
 
-export default WalletService;
+export default UserService;

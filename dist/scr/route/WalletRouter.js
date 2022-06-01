@@ -30,23 +30,27 @@ exports.routerTemplate = void 0;
 const express_1 = __importStar(require("express"));
 exports.routerTemplate = express_1.default.Router();
 const WalletController_1 = __importDefault(require("../controller/WalletController"));
+const middleware_1 = __importDefault(require("../middleware/middleware"));
 const router = (0, express_1.Router)();
 const walletController = new WalletController_1.default();
-const middleware = (req, res, next) => {
-    const authorization = req.headers.authorization;
-    if (authorization === 'CYNTHIA') {
-        next();
-    }
-    else {
-        res.status(401).json({
-            status: 'NOK',
-            message: 'User not authorized'
-        });
-    }
-};
-router.get('/get/all', middleware, walletController.getWallet);
-router.post('/insert', middleware, walletController.insertWallet);
-router.post('/update', middleware, walletController.updateWallet);
-router.get('/get/detail/:id', middleware, walletController.getWalletbyID);
+const middleware = new middleware_1.default();
+// const middleware: any = (req: Request, res: Response, next: NextFunction) => {
+//     const authorization: string = req.headers.authorization;
+//     const result=redisClient.exists(authorization)
+//     result.then(function(result) {
+//         if(result===1){
+//             next();
+//         } else {
+//             res.status(401).json({
+//                 status: 'NOK',
+//                 message: 'User not authorized'
+//             });
+//         }
+//      })
+// } 
+router.get('/get/all', middleware.MiddleWare, walletController.getWallet);
+router.post('/insert', middleware.MiddleWare, walletController.insertWallet);
+router.post('/update', middleware.MiddleWare, walletController.updateWallet);
+router.get('/get/detail/:id', middleware.MiddleWare, walletController.getWalletbyID);
 exports.default = router;
 //# sourceMappingURL=WalletRouter.js.map

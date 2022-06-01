@@ -18,7 +18,9 @@ const UserQuery_1 = __importDefault(require("../query/UserQuery"));
 const atob_1 = __importDefault(require("atob"));
 const btoa_1 = __importDefault(require("btoa"));
 const crypto_js_1 = __importDefault(require("crypto-js"));
-class WalletService {
+require("dotenv/config");
+const connectRedis_1 = __importDefault(require("../redis/connectRedis"));
+class UserService {
     registUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             // encrypt password using btoa
@@ -27,7 +29,7 @@ class WalletService {
             //decrypt password using atob
             const pass_atob = (0, atob_1.default)(pass_btoa);
             // encrypt pass_atob using crypt-js
-            const cipherpass = crypto_js_1.default.AES.encrypt(pass_atob, 'secret key 123').toString();
+            const cipherpass = crypto_js_1.default.AES.encrypt(pass_atob, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString();
             //connect to db and querying
             const client = yield dbconnector_1.default.connect();
             const resultQuery = yield UserQuery_1.default.registUser(client, req, cipherpass);
@@ -56,13 +58,14 @@ class WalletService {
             //connect to db and querying
             const client = yield dbconnector_1.default.connect();
             const resultQuery = yield UserQuery_1.default.loginUser(client, req);
-            console.log(resultQuery);
             client.release();
             if (resultQuery.rowCount > 0) {
-                console.log(resultQuery.rows[0].password);
-                const decryptedText = crypto_js_1.default.AES.decrypt(resultQuery.rows[0].password, 'secret key 123').toString(crypto_js_1.default.enc.Utf8);
+                const decryptedText = crypto_js_1.default.AES.decrypt(resultQuery.rows[0].password, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString(crypto_js_1.default.enc.Utf8);
                 if (decryptedText == pass_atob) {
-                    const token = jsonwebtoken_1.default.sign({ resultQuery }, 'random_string', { expiresIn: "2h", });
+                    const token = jsonwebtoken_1.default.sign({ resultQuery }, process.env.ACCESS_TOKEN_KEY_JWT, { expiresIn: "2h", });
+                    const userID = resultQuery.rows[0].id.toString();
+                    connectRedis_1.default.SET(token, "1");
+                    connectRedis_1.default.expire(token, 7200);
                     res.status(200).json({
                         status: 'OK',
                         message: 'User login successful',
@@ -80,5 +83,5 @@ class WalletService {
         });
     }
 }
-exports.default = WalletService;
+exports.default = UserService;
 //# sourceMappingURL=userService.js.map

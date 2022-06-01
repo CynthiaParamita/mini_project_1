@@ -1,7 +1,6 @@
 import pool from '../dbconfig/dbconnector';
 import express, { Request, Response } from 'express';
 import Joi from 'joi'
-
 import WalletService from '../service/WalletService';
 import { register } from 'ts-node';
 
