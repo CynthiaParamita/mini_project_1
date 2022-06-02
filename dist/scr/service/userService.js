@@ -12,14 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const dbconnector_1 = __importDefault(require("../dbconfig/dbconnector"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const UserQuery_1 = __importDefault(require("../query/UserQuery"));
 const atob_1 = __importDefault(require("atob"));
 const btoa_1 = __importDefault(require("btoa"));
 const crypto_js_1 = __importDefault(require("crypto-js"));
 require("dotenv/config");
 const connectRedis_1 = __importDefault(require("../redis/connectRedis"));
+const UserModel_1 = __importDefault(require("../model/UserModel"));
 class UserService {
     registUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -31,10 +30,9 @@ class UserService {
             // encrypt pass_atob using crypt-js
             const cipherpass = crypto_js_1.default.AES.encrypt(pass_atob, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString();
             //connect to db and querying
-            const client = yield dbconnector_1.default.connect();
-            const resultQuery = yield UserQuery_1.default.registUser(client, req, cipherpass);
-            client.release();
-            if (resultQuery.rowCount > 0) {
+            const { full_name, email } = req.body;
+            const newUser = yield UserModel_1.default.create({ full_name: full_name, email: email, password: cipherpass });
+            if (newUser.full_name === full_name) {
                 res.status(200).json({
                     status: 'OK',
                     message: 'User Registration successful',
@@ -56,14 +54,17 @@ class UserService {
             //decrypt password using atob
             const pass_atob = (0, atob_1.default)(pass_btoa);
             //connect to db and querying
-            const client = yield dbconnector_1.default.connect();
-            const resultQuery = yield UserQuery_1.default.loginUser(client, req);
-            client.release();
-            if (resultQuery.rowCount > 0) {
-                const decryptedText = crypto_js_1.default.AES.decrypt(resultQuery.rows[0].password, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString(crypto_js_1.default.enc.Utf8);
+            const users = yield UserModel_1.default.findAll({
+                where: {
+                    email: req.body.email
+                }
+            });
+            const len = JSON.stringify(users, null, 2).length;
+            if (len > 3) {
+                const result = JSON.parse(JSON.stringify(users, null, 2));
+                const decryptedText = crypto_js_1.default.AES.decrypt(result[0].password, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString(crypto_js_1.default.enc.Utf8);
                 if (decryptedText == pass_atob) {
-                    const token = jsonwebtoken_1.default.sign({ resultQuery }, process.env.ACCESS_TOKEN_KEY_JWT, { expiresIn: "2h", });
-                    const userID = resultQuery.rows[0].id.toString();
+                    const token = jsonwebtoken_1.default.sign({ result }, process.env.ACCESS_TOKEN_KEY_JWT, { expiresIn: "2h", });
                     connectRedis_1.default.SET(token, "1");
                     connectRedis_1.default.expire(token, 7200);
                     res.status(200).json({

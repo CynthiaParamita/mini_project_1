@@ -2,9 +2,11 @@ import express, { Application, Router } from 'express';
 import bodyParser from 'body-parser';
 import walletRouter from './route/WalletRouter';
 import userRouter from './route/UserRouter';
-import pool from './dbconfig/dbconnector';
+import Sequelize from './dbconfig/dbconnector';
 import 'dotenv/config'
 import redis=require('redis')
+import sequelize = require('sequelize')
+
 
 class Server {
     private app;
@@ -21,11 +23,13 @@ class Server {
         this.app.use(bodyParser.json({ limit: '1mb' })); // 100kb default
     }
 
-    private dbConnect() {
-        pool.connect(function (err, client, done) {
-            if (err) {console.error(err);}
-            console.log('Connected');
-          }); 
+    async dbConnect() {
+        try {
+            await Sequelize.authenticate();
+            console.log('Connection has been established successfully.');
+          } catch (error) {
+            console.error('Unable to connect to the database:', error);
+          }
     }
     
     private routerConfig() {

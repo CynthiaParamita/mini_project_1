@@ -12,16 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const dbconnector_1 = __importDefault(require("../dbconfig/dbconnector"));
-const WalletQuery_1 = __importDefault(require("../query/WalletQuery"));
+const WalletModel_1 = __importDefault(require("../model/WalletModel"));
 class WalletService {
     getAllWallet(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const client = yield dbconnector_1.default.connect();
-            const resultQuery = yield WalletQuery_1.default.getAllWallet(client);
-            client.release();
-            if (resultQuery.rowCount > 0) {
-                const result = resultQuery.rows;
+            const users = yield WalletModel_1.default.findAll();
+            const len = JSON.stringify(users, null, 2).length;
+            if (len > 3) {
+                const result = JSON.parse(JSON.stringify(users, null, 2));
                 res.status(200).json({
                     status: 'OK',
                     message: 'Wallet is retrieved successfully',
@@ -38,10 +36,9 @@ class WalletService {
     }
     insertAllWallet(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const client = yield dbconnector_1.default.connect();
-            const resultQuery = yield WalletQuery_1.default.insertWalletData(client, req);
-            client.release();
-            if (resultQuery.rowCount > 0) {
+            const { income, expenses } = req.body;
+            const newWallet = yield WalletModel_1.default.create({ income: income, expenses: expenses });
+            if (newWallet.income = income) {
                 res.status(200).json({
                     status: 'OK',
                     message: 'Data input successful',
@@ -57,10 +54,13 @@ class WalletService {
     }
     updateAllWallet(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const client = yield dbconnector_1.default.connect();
-            const resultQuery = yield WalletQuery_1.default.updateWalletData(client, req);
-            client.release();
-            if (resultQuery.rowCount > 0) {
+            const { id, income, expenses } = req.body;
+            const updateWallet = yield WalletModel_1.default.update({ income: income, expenses: expenses }, {
+                where: {
+                    id: id
+                }
+            });
+            if (updateWallet.income = income) {
                 res.status(200).json({
                     status: 'OK',
                     message: 'Data update successful',
@@ -76,11 +76,14 @@ class WalletService {
     }
     getWalletbyID(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const client = yield dbconnector_1.default.connect();
-            const resultQuery = yield WalletQuery_1.default.getWalletById(client, req);
-            client.release();
-            if (resultQuery.rowCount > 0) {
-                const result = resultQuery.rows;
+            const walletId = yield WalletModel_1.default.findAll({
+                where: {
+                    id: req.params.id
+                }
+            });
+            const len = JSON.stringify(walletId, null, 2).length;
+            if (len > 3) {
+                const result = JSON.parse(JSON.stringify(walletId, null, 2));
                 res.status(200).json({
                     status: 'OK',
                     message: 'Wallet is retrieved successfully',

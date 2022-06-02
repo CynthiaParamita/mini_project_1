@@ -1,15 +1,14 @@
-import pool from '../dbconfig/dbconnector';
 import express, {Request, Response} from 'express';
 import WalletQuery from '../query/WalletQuery';
+import Wallet from '../model/WalletModel'
 
 class WalletService {
     async getAllWallet(req: Request, res: Response) {
-        const client = await pool.connect();
-        const resultQuery: any = await WalletQuery.getAllWallet(client);
-        client.release();
+        const users = await Wallet.findAll();
+        const len= JSON.stringify(users, null, 2).length
 
-        if (resultQuery.rowCount > 0) {
-            const result: any = resultQuery.rows;
+        if (len>3) {
+            const result: any = JSON.parse(JSON.stringify(users, null, 2))
             res.status(200).json({
                 status: 'OK',
                 message: 'Wallet is retrieved successfully',
@@ -23,11 +22,10 @@ class WalletService {
         }
     }
     async insertAllWallet(req: Request, res: Response) {
-        const client = await pool.connect();
-        const resultQuery: any = await WalletQuery.insertWalletData(client,req);
-        client.release();
-
-        if (resultQuery.rowCount > 0) {
+        const { income, expenses}: any = req.body
+        const newWallet = await Wallet.create({ income:income , expenses:expenses });
+       
+        if (newWallet.income=income) {
             res.status(200).json({
                 status: 'OK',
                 message: 'Data input successful',
@@ -40,11 +38,14 @@ class WalletService {
         }
     }
     async updateAllWallet(req: Request, res: Response) {
-        const client = await pool.connect();
-        const resultQuery: any = await WalletQuery.updateWalletData(client,req);
-        client.release();
+        const { id,income, expenses}: any = req.body
+        const updateWallet= await Wallet.update({ income:income,expenses:expenses}, {
+            where: {
+              id:id
+            }
+          });
 
-        if (resultQuery.rowCount > 0) {
+        if (updateWallet.income=income) {
             res.status(200).json({
                 status: 'OK',
                 message: 'Data update successful',
@@ -57,12 +58,15 @@ class WalletService {
         }
     }
     async getWalletbyID(req: Request, res: Response) {
-        const client = await pool.connect();
-        const resultQuery: any = await WalletQuery.getWalletById(client,req);
-        client.release();
+        const walletId=await Wallet.findAll({
+            where: {
+                id: req.params.id
+            }
+          });
+        const len= JSON.stringify(walletId, null, 2).length
 
-        if (resultQuery.rowCount > 0) {
-            const result: any = resultQuery.rows;
+        if (len>3) {
+            const result: any = JSON.parse(JSON.stringify(walletId, null, 2))
             res.status(200).json({
                 status: 'OK',
                 message: 'Wallet is retrieved successfully',

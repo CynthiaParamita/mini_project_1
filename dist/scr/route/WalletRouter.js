@@ -34,20 +34,6 @@ const middleware_1 = __importDefault(require("../middleware/middleware"));
 const router = (0, express_1.Router)();
 const walletController = new WalletController_1.default();
 const middleware = new middleware_1.default();
-// const middleware: any = (req: Request, res: Response, next: NextFunction) => {
-//     const authorization: string = req.headers.authorization;
-//     const result=redisClient.exists(authorization)
-//     result.then(function(result) {
-//         if(result===1){
-//             next();
-//         } else {
-//             res.status(401).json({
-//                 status: 'NOK',
-//                 message: 'User not authorized'
-//             });
-//         }
-//      })
-// } 
 router.get('/get/all', middleware.MiddleWare, walletController.getWallet);
 router.post('/insert', middleware.MiddleWare, walletController.insertWallet);
 router.post('/update', middleware.MiddleWare, walletController.updateWallet);

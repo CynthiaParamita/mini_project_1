@@ -1,4 +1,3 @@
-import pool from '../dbconfig/dbconnector';
 import express, {Request, Response} from 'express';
 import jwt from 'jsonwebtoken'
 import UserQuery from '../query/UserQuery';
@@ -8,6 +7,7 @@ import CryptoJS from 'crypto-js'
 import { Cipher } from 'crypto';
 import 'dotenv/config'
 import redisClient from "../redis/connectRedis"
+import User from '../model/UserModel'
 
 class UserService {
     async registUser(req: Request, res: Response) {
@@ -22,11 +22,10 @@ class UserService {
         const cipherpass = CryptoJS.AES.encrypt(pass_atob, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString()
 
         //connect to db and querying
-        const client = await pool.connect()
-        const resultQuery: any = await UserQuery.registUser(client,req,cipherpass)
-        client.release()
+        const { full_name, email}: any = req.body
+        const newUser = await User.create({ full_name:full_name , email: email ,password:cipherpass});
 
-        if (resultQuery.rowCount > 0) {
+        if (newUser.full_name===full_name) {
             res.status(200).json({
                 status: 'OK',
                 message: 'User Registration successful',
@@ -48,15 +47,18 @@ class UserService {
         const pass_atob:string = atob(pass_btoa)
 
         //connect to db and querying
-        const client = await pool.connect()
-        const resultQuery: any = await UserQuery.loginUser(client,req)
-        client.release()
+        const users=await User.findAll({
+            where: {
+              email: req.body.email
+            }
+          });
+        const len= JSON.stringify(users, null, 2).length
 
-        if (resultQuery.rowCount > 0) {
-            const decryptedText  = CryptoJS.AES.decrypt(resultQuery.rows[0].password, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString(CryptoJS.enc.Utf8);
+        if (len>3) {
+            const result=JSON.parse(JSON.stringify(users, null, 2))
+            const decryptedText  = CryptoJS.AES.decrypt(result[0].password, process.env.ACCESS_TOKEN_KEY_CRYPTO).toString(CryptoJS.enc.Utf8);
             if (decryptedText == pass_atob){ 
-                const token : string = jwt.sign({resultQuery},process.env.ACCESS_TOKEN_KEY_JWT,{expiresIn: "2h",})
-                const userID: string=resultQuery.rows[0].id.toString()
+                const token : string = jwt.sign({result},process.env.ACCESS_TOKEN_KEY_JWT,{expiresIn: "2h",})
                 redisClient.SET(token,"1")
                 redisClient.expire(token,7200)
                 res.status(200).json({

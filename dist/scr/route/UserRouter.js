@@ -32,17 +32,6 @@ exports.routerTemplate = express_1.default.Router();
 const UserController_1 = __importDefault(require("../controller/UserController"));
 const router = (0, express_1.Router)();
 const userController = new UserController_1.default();
-// const middleware: any = (req: Request, res: Response, next: NextFunction) => {
-//     const authorization: string = req.headers.authorization;
-//     if(authorization === 'CYNTHIA'){
-//         next();
-//     } else {
-//         res.status(401).json({
-//             status: 'NOK',
-//             message: 'User not authorized'
-//         });
-//     }
-// }
 router.post('/register', userController.RegistUser);
 router.post('/login', userController.LoginUser);
 exports.default = router;

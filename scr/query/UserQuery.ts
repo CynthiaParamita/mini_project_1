@@ -5,7 +5,7 @@ class UserQuery {
         const result: any = await client.query(sql, [full_name,email,password]);
         return result;    
     }
-    static async loginUser (client: any,request:any) { // blm selesai
+    static async loginUser (client: any,request:any) { 
         const email: any = request.body.email.toString()
         const sql: string='SELECT * FROM t_user WHERE email = $1'
         const result: any = await client.query(sql, [email]);
