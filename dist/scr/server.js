@@ -18,6 +18,7 @@ const WalletRouter_1 = __importDefault(require("./route/WalletRouter"));
 const UserRouter_1 = __importDefault(require("./route/UserRouter"));
 const dbconnector_1 = __importDefault(require("./dbconfig/dbconnector"));
 require("dotenv/config");
+const cors_1 = __importDefault(require("cors"));
 class Server {
     constructor() {
         this.start = (port) => {
@@ -28,6 +29,7 @@ class Server {
             });
         };
         this.app = (0, express_1.default)();
+        this.app.use((0, cors_1.default)());
         this.config();
         this.routerConfig();
         this.dbConnect();

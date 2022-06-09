@@ -9,9 +9,9 @@ const router = Router();
 const walletController = new WalletController();
 const middleware=new Middleware()
 
-router.get('/get/all',middleware.MiddleWare, walletController.getWallet);
-router.post('/insert',middleware.MiddleWare, walletController.insertWallet);
-router.post('/update',middleware.MiddleWare, walletController.updateWallet);
+router.get('/get/all', middleware.MiddleWare,walletController.getWallet);
+router.post('/insert', middleware.MiddleWare,walletController.insertWallet);
+router.post('/update', middleware.MiddleWare,walletController.updateWallet);
 router.get('/get/detail/:id',middleware.MiddleWare,walletController.getWalletbyID);
 
 export default router;
